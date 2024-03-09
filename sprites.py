@@ -74,16 +74,22 @@ class Macaw(pygame.sprite.Sprite):
         self.rect.y = round(self.pos.y)
             
     def jump(self):
-        self.direction = -300
+        self.direction = -350
         
     def animate(self,dt):
         self.frame_index += 7.5*dt
         if self.frame_index >= len(self.frames):
             self.frame_index = 0
         self.image = self.frames[int(self.frame_index)]
+        
+    def rotate(self):
+        rotated_macaw = pygame.transform.rotozoom(self.image, -self.direction * 0.03, 1)
+        self.image = rotated_macaw
     
     
     def update(self,dt):
         self.apply_gravity(dt)
         self.animate(dt)
-        # self.rotate()
+        self.rotate()
+        
+        
