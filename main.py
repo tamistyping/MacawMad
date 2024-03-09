@@ -1,6 +1,6 @@
 import pygame, sys, time
 from settings import *
-from sprites import Background
+from sprites import Background, Ground, Macaw
  
 class Game:
     def __init__(self):
@@ -15,8 +15,17 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
         
+        #scale factor
+        background_height = pygame.image.load('../graphics/layer-1-sky.png').get_height()
+        background_width = pygame.image.load('../graphics/layer-1-sky.png').get_width()
+        print(background_height)
+        print(background_width)
+        self.scale_factor = WINDOW_HEIGHT / background_height
+    
         #sprite setup
-        Background(self.all_sprites)
+        Background(self.all_sprites,self.scale_factor)
+        Ground(self.all_sprites,self.scale_factor*1.5)
+        Macaw(self.all_sprites,self.scale_factor*1.75)
  
     def run(self):
         last_time = time.time()
@@ -33,6 +42,8 @@ class Game:
                     sys.exit()
             
             # game logic
+            self.display_surface.fill('black')
+            self.all_sprites.update(dt)
             self.all_sprites.draw(self.display_surface)
             
             pygame.display.update()
