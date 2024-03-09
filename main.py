@@ -10,6 +10,7 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
         pygame.display.set_caption('Macaw Mad!')
         self.clock = pygame.time.Clock()
+        self.active = True
         
         #sprite groups
         self.all_sprites = pygame.sprite.Group()
@@ -35,17 +36,22 @@ class Game:
         self.font = pygame.font.Font('../graphics/font/cartoon-font.ttf', 36)
         self.score = 0
         
+        #menu
+        self.menu_surf = pygame.image.load('../graphics/ui/menu.png').convert_alpha()
+        self.scaled_menu_surf = pygame.transform.scale(self.menu_surf,pygame.math.Vector2(self.menu_surf.get_size())/1.5)
+        self.menu_rect = self.scaled_menu_surf.get_rect(center = (WINDOW_WIDTH/2,WINDOW_HEIGHT/2))
+        
     def collisions(self):
         if pygame.sprite.spritecollide(self.macaw,self.collision_sprites,False,pygame.sprite.collide_mask)\
         or self.macaw.rect.top <= -10:
-            pygame.quit()
-            sys.exit()
+            self.active = False
  
     def display_score(self):
-        self.score = pygame.time.get_ticks()//1000
+        if self.active:
+            self.score = pygame.time.get_ticks()//1000
         
         score_surf = self.font.render(str(self.score),True, 'brown')
-        score_rect = score_surf.get_rect(midtop = (WINDOW_HEIGHT/2, WINDOW_HEIGHT/10))
+        score_rect = score_surf.get_rect(midtop = (WINDOW_WIDTH/2, WINDOW_HEIGHT/10))
         self.display_surface.blit(score_surf,score_rect)
  
     def run(self):
@@ -70,9 +76,13 @@ class Game:
             # game logic
             self.display_surface.fill('black')
             self.all_sprites.update(dt)
-            self.collisions()
             self.all_sprites.draw(self.display_surface)
             self.display_score()
+            
+            if self.active:
+                self.collisions()
+            else:
+                self.display_surface.blit(self.scaled_menu_surf,self.menu_rect)
             
             pygame.display.update()
             self.clock.tick(FRAMERATE)
