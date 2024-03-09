@@ -24,12 +24,17 @@ class Game:
     
         #sprite setup
         Background(self.all_sprites,self.scale_factor)
-        Ground(self.all_sprites,self.scale_factor*1.5)
+        Ground([self.all_sprites,self.collision_sprites],self.scale_factor*1.5)
         self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75)
         
         #timer
         self.obstacle_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.obstacle_timer,1000)
+        
+    def collisions(self):
+        if pygame.sprite.spritecollide(self.macaw,self.collision_sprites,False):
+            pygame.quit()
+            sys.exit()
  
     def run(self):
         last_time = time.time()
@@ -48,11 +53,12 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         self.macaw.jump()
                 if event.type == self.obstacle_timer:
-                    Obstacle(self.all_sprites,self.scale_factor*3.65)
+                    Obstacle([self.all_sprites,self.collision_sprites],self.scale_factor*3.65)
             
             # game logic
             self.display_surface.fill('black')
             self.all_sprites.update(dt)
+            self.collisions()
             self.all_sprites.draw(self.display_surface)
             
             pygame.display.update()
