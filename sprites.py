@@ -41,7 +41,7 @@ class Ground(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         
     def update(self, dt):
-        self.pos.x -= 300 * dt
+        self.pos.x -= 350 * dt
         if self.rect.centerx <= 0:
             self.pos.x = 0
         self.rect.x = round(self.pos.x)
@@ -107,12 +107,12 @@ class Obstacle(pygame.sprite.Sprite):
         
         orientation = choice(('up', 'down'))
         surface = pygame.image.load(f'../graphics/obstacles/{choice((0,1))}.png').convert_alpha()
-        self.image = pygame.transform.smoothscale(surface,pygame.math.Vector2(surface.get_size())* scale_factor)
+        self.image = pygame.transform.scale(surface, (int(surface.get_width() * scale_factor), int(surface.get_height() * scale_factor)))
         
-        x = WINDOW_WIDTH + randint(10,50)
+        x = WINDOW_WIDTH + randint(10,40)
         
         if orientation == 'up':
-            y = WINDOW_HEIGHT + randint(10,100)
+            y = WINDOW_HEIGHT + randint(5,50)
             self.rect = self.image.get_rect(midbottom = (x, y))
         else:
             y = randint(-175,-25)
@@ -125,7 +125,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         
     def update(self,dt):
-        self.pos.x -= 400*dt
+        self.pos.x -= 325*dt
         self.rect.x = round(self.pos.x)
         if self.rect.right <= -100:
             self.kill()

@@ -1,6 +1,6 @@
 import pygame, sys, time
 from settings import *
-from sprites import Background, Ground, Macaw, Obstacle
+from sprites import Background, Macaw, Obstacle, Ground
  
 class Game:
     def __init__(self):
@@ -31,11 +31,22 @@ class Game:
         self.obstacle_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.obstacle_timer,1000)
         
+        # font-style
+        self.font = pygame.font.Font('../graphics/font/cartoon-font.ttf', 36)
+        self.score = 0
+        
     def collisions(self):
         if pygame.sprite.spritecollide(self.macaw,self.collision_sprites,False,pygame.sprite.collide_mask)\
         or self.macaw.rect.top <= -10:
             pygame.quit()
             sys.exit()
+ 
+    def display_score(self):
+        self.score = pygame.time.get_ticks()//1000
+        
+        score_surf = self.font.render(str(self.score),True, 'brown')
+        score_rect = score_surf.get_rect(midtop = (WINDOW_HEIGHT/2, WINDOW_HEIGHT/10))
+        self.display_surface.blit(score_surf,score_rect)
  
     def run(self):
         last_time = time.time()
@@ -54,13 +65,14 @@ class Game:
                     if event.key == pygame.K_SPACE:
                         self.macaw.jump()
                 if event.type == self.obstacle_timer:
-                    Obstacle([self.all_sprites,self.collision_sprites],self.scale_factor*3.65)
+                    Obstacle([self.all_sprites,self.collision_sprites],self.scale_factor*3)
             
             # game logic
             self.display_surface.fill('black')
             self.all_sprites.update(dt)
             self.collisions()
             self.all_sprites.draw(self.display_surface)
+            self.display_score()
             
             pygame.display.update()
             self.clock.tick(FRAMERATE)
