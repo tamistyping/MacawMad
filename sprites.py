@@ -37,6 +37,9 @@ class Ground(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (0,WINDOW_HEIGHT))
         self.pos = pygame.math.Vector2(self.rect.topleft)
         
+        #mask
+        self.mask = pygame.mask.from_surface(self.image)
+        
     def update(self, dt):
         self.pos.x -= 300 * dt
         if self.rect.centerx <= 0:
@@ -60,6 +63,9 @@ class Macaw(pygame.sprite.Sprite):
         #movement
         self.gravity = 850
         self.direction = 0
+        
+        #mask
+        self.mask = pygame.mask.from_surface(self.image)
          
         
     def import_frames(self,scale_factor):
@@ -86,6 +92,7 @@ class Macaw(pygame.sprite.Sprite):
     def rotate(self):
         rotated_macaw = pygame.transform.rotozoom(self.image, -self.direction * 0.03, 1)
         self.image = rotated_macaw
+        self.mask = pygame.mask.from_surface(self.image)
     
     
     def update(self,dt):
@@ -113,6 +120,9 @@ class Obstacle(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midtop = (x, y))
             
         self.pos = pygame.math.Vector2(self.rect.topleft)
+        
+        #mask
+        self.mask = pygame.mask.from_surface(self.image)
         
     def update(self,dt):
         self.pos.x -= 400*dt
