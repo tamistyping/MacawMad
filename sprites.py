@@ -57,9 +57,9 @@ class Macaw(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)
         
         #movement
-        self.gravity = 20
+        self.gravity = 425
         self.direction = 0
-        
+         
         
     def import_frames(self,scale_factor):
         self.frames = []
@@ -68,12 +68,22 @@ class Macaw(pygame.sprite.Sprite):
             scaled_surface = pygame.transform.scale(surface,pygame.math.Vector2(surface.get_size())*scale_factor)
             self.frames.append(scaled_surface)
             
-    def gravity(self,dt):
+    def apply_gravity(self,dt):
         self.direction += self.gravity * dt
         self.pos.y += self.direction * dt
         self.rect.y = round(self.pos.y)
             
+    def jump(self):
+        self.direction = -300
+        
+    def animate(self,dt):
+        self.frame_index += 7.5*dt
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        self.image = self.frames[int(self.frame_index)]
+    
+    
     def update(self,dt):
-        self.gravity()
-        self.animate()
-        self.rotate()
+        self.apply_gravity(dt)
+        self.animate(dt)
+        # self.rotate()

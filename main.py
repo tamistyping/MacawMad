@@ -25,7 +25,7 @@ class Game:
         #sprite setup
         Background(self.all_sprites,self.scale_factor)
         Ground(self.all_sprites,self.scale_factor*1.5)
-        Macaw(self.all_sprites,self.scale_factor*1.75)
+        self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75)
  
     def run(self):
         last_time = time.time()
@@ -36,10 +36,13 @@ class Game:
             last_time = time.time()
  
             # event loop
-            for event in pygame.event.get():
+            for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.macaw.jump()
             
             # game logic
             self.display_surface.fill('black')
