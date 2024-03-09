@@ -1,10 +1,11 @@
 import pygame
 from settings import *
+from random import choice, randint
 
 class Background(pygame.sprite.Sprite):
     def __init__(self,groups,scale_factor):
         super().__init__(groups)
-        background_image = pygame.image.load('../graphics/layer-1-sky.png').convert()
+        background_image = pygame.image.load('../graphics/environment/layer-1-sky.png').convert()
         
         full_height = background_image.get_height() * scale_factor
         full_width = background_image.get_width() * scale_factor
@@ -57,7 +58,7 @@ class Macaw(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)
         
         #movement
-        self.gravity = 425
+        self.gravity = 850
         self.direction = 0
          
         
@@ -74,7 +75,7 @@ class Macaw(pygame.sprite.Sprite):
         self.rect.y = round(self.pos.y)
             
     def jump(self):
-        self.direction = -350
+        self.direction = -500
         
     def animate(self,dt):
         self.frame_index += 7.5*dt
@@ -93,3 +94,28 @@ class Macaw(pygame.sprite.Sprite):
         self.rotate()
         
         
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self,groups,scale_factor):
+        super().__init__(groups)
+        
+        orientation = choice(('up', 'down'))
+        surface = pygame.image.load(f'../graphics/obstacles/{choice((0,1))}.png').convert_alpha()
+        self.image = pygame.transform.smoothscale(surface,pygame.math.Vector2(surface.get_size())* scale_factor)
+        
+        x = WINDOW_WIDTH + randint(10,50)
+        
+        if orientation == 'up':
+            y = WINDOW_HEIGHT + randint(10,100)
+            self.rect = self.image.get_rect(midbottom = (x, y))
+        else:
+            y = randint(-175,-25)
+            self.image = pygame.transform.flip(self.image,False,True)
+            self.rect = self.image.get_rect(midtop = (x, y))
+            
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        
+    def update(self,dt):
+        self.pos.x -= 400*dt
+        self.rect.x = round(self.pos.x)
+        if self.rect.right <= -100:
+            self.kill()

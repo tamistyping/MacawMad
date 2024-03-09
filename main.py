@@ -1,6 +1,6 @@
 import pygame, sys, time
 from settings import *
-from sprites import Background, Ground, Macaw
+from sprites import Background, Ground, Macaw, Obstacle
  
 class Game:
     def __init__(self):
@@ -16,16 +16,20 @@ class Game:
         self.collision_sprites = pygame.sprite.Group()
         
         #scale factor
-        background_height = pygame.image.load('../graphics/layer-1-sky.png').get_height()
-        background_width = pygame.image.load('../graphics/layer-1-sky.png').get_width()
-        print(background_height)
-        print(background_width)
+        background_height = pygame.image.load('../graphics/environment/layer-1-sky.png').get_height()
+        # background_width = pygame.image.load('../graphics/environment/layer-1-sky.png').get_width()
+        # print(background_height)
+        # print(background_width)
         self.scale_factor = WINDOW_HEIGHT / background_height
     
         #sprite setup
         Background(self.all_sprites,self.scale_factor)
         Ground(self.all_sprites,self.scale_factor*1.5)
         self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75)
+        
+        #timer
+        self.obstacle_timer = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.obstacle_timer,1000)
  
     def run(self):
         last_time = time.time()
@@ -43,6 +47,8 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.macaw.jump()
+                if event.type == self.obstacle_timer:
+                    Obstacle(self.all_sprites,self.scale_factor*3.65)
             
             # game logic
             self.display_surface.fill('black')
