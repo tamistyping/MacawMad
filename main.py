@@ -10,7 +10,7 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
         pygame.display.set_caption('Macaw Mad!')
         self.clock = pygame.time.Clock()
-        self.active = True
+        self.active = False
         
         #sprite groups
         self.all_sprites = pygame.sprite.Group()
@@ -31,6 +31,7 @@ class Game:
         #timer
         self.obstacle_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.obstacle_timer,1000)
+        self.start_offset = 0
         
         # font-style
         self.font = pygame.font.Font('../graphics/font/cartoon-font.ttf', 36)
@@ -44,14 +45,21 @@ class Game:
     def collisions(self):
         if pygame.sprite.spritecollide(self.macaw,self.collision_sprites,False,pygame.sprite.collide_mask)\
         or self.macaw.rect.top <= -10:
+            for sprite in self.collision_sprites.sprites():
+                if sprite.sprite_type == 'obstacle':
+                    sprite.kill()
             self.active = False
+            self.macaw.kill()
  
     def display_score(self):
         if self.active:
-            self.score = pygame.time.get_ticks()//1000
+            self.score = (pygame.time.get_ticks() - self.start_offset)//1000
+            y = WINDOW_HEIGHT / 10
+        else:
+            y = WINDOW_HEIGHT / 2 + (self.menu_rect.height / 1.5)
         
         score_surf = self.font.render(str(self.score),True, 'brown')
-        score_rect = score_surf.get_rect(midtop = (WINDOW_WIDTH/2, WINDOW_HEIGHT/10))
+        score_rect = score_surf.get_rect(midtop = (WINDOW_WIDTH/2, y))
         self.display_surface.blit(score_surf,score_rect)
  
     def run(self):
@@ -69,9 +77,15 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        self.macaw.jump()
-                if event.type == self.obstacle_timer:
+                        if self.active:
+                            self.macaw.jump()
+                        else:
+                            self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75)
+                            self.active = True
+                            self.start_offset = pygame.time.get_ticks()
+                if event.type == self.obstacle_timer and self.active:
                     Obstacle([self.all_sprites,self.collision_sprites],self.scale_factor*3)
+                    
             
             # game logic
             self.display_surface.fill('black')
@@ -82,6 +96,7 @@ class Game:
             if self.active:
                 self.collisions()
             else:
+                self.macaw.kill()
                 self.display_surface.blit(self.scaled_menu_surf,self.menu_rect)
             
             pygame.display.update()
