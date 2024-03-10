@@ -12,6 +12,15 @@ class Game:
         self.clock = pygame.time.Clock()
         self.active = False
         
+        #music
+        pygame.mixer.init()
+        self.theme_song = pygame.mixer.Sound('../sounds/theme.mp3')
+        self.theme_song.set_volume(0.03)
+        self.theme_song.play(loops=-1)
+        
+        self.kill_sound = pygame.mixer.Sound('../sounds/loser.mp3')
+        self.kill_sound.set_volume(0.4)
+        
         #sprite groups
         self.all_sprites = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
@@ -26,7 +35,7 @@ class Game:
         #sprite setup
         Background(self.all_sprites,self.scale_factor)
         Ground([self.all_sprites,self.collision_sprites],self.scale_factor*1.5)
-        self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75)
+        self.macaw = Macaw(self.all_sprites,self.scale_factor*1.75) 
         
         #timer
         self.obstacle_timer = pygame.USEREVENT + 1
@@ -45,6 +54,7 @@ class Game:
     def collisions(self):
         if pygame.sprite.spritecollide(self.macaw,self.collision_sprites,False,pygame.sprite.collide_mask)\
         or self.macaw.rect.top <= -10:
+            self.kill_sound.play()
             for sprite in self.collision_sprites.sprites():
                 if sprite.sprite_type == 'obstacle':
                     sprite.kill()
@@ -95,6 +105,8 @@ class Game:
             
             if self.active:
                 self.collisions()
+                self.theme_song = pygame.mixer.Sound('../sounds/theme.mp3')
+                self.theme_song.set_volume(0.3)
             else:
                 self.macaw.kill()
                 self.display_surface.blit(self.scaled_menu_surf,self.menu_rect)
